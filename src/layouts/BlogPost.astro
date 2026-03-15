@@ -15,47 +15,153 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
+			body {
+				background: #0a0a0f;
+				min-height: 100vh;
+				background-image: 
+					linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+				background-size: 50px 50px;
+			}
+			
+			.grid-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(ellipse at center, transparent 0%, #0a0a0f 70%);
+				pointer-events: none;
+				z-index: 0;
+			}
+			
 			main {
+				position: relative;
+				z-index: 1;
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
 			}
+			
 			.hero-image {
 				width: 100%;
+				margin-bottom: 2rem;
 			}
+			
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
 				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border: 1px solid rgba(0, 240, 255, 0.3);
+				box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
 			}
+			
 			.prose {
 				width: 720px;
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
-				color: rgb(var(--gray-dark));
+				color: #e0e0e0;
 			}
+			
+			.prose h1, .prose h2, .prose h3, .prose h4 {
+				color: #00f0ff;
+				font-family: 'Courier New', monospace;
+			}
+			
+			.prose a {
+				color: #ff00ff;
+				text-decoration: none;
+				border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+				transition: all 0.2s ease;
+			}
+			
+			.prose a:hover {
+				color: #fff;
+				border-bottom-color: #ff00ff;
+				text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+			}
+			
+			.prose code {
+				background: rgba(0, 240, 255, 0.1);
+				color: #00f0ff;
+				padding: 0.2em 0.4em;
+				border-radius: 4px;
+				font-family: 'Courier New', monospace;
+				font-size: 0.9em;
+			}
+			
+			.prose pre {
+				background: rgba(0, 0, 0, 0.5);
+				border: 1px solid rgba(0, 240, 255, 0.2);
+				border-radius: 8px;
+				padding: 1.5em;
+				overflow-x: auto;
+			}
+			
+			.prose pre code {
+				background: transparent;
+				padding: 0;
+			}
+			
+			.prose blockquote {
+				border-left: 3px solid #00f0ff;
+				padding-left: 1em;
+				margin-left: 0;
+				color: #a0a0a0;
+				font-style: italic;
+			}
+			
+			.prose hr {
+				border: none;
+				border-top: 1px solid rgba(0, 240, 255, 0.3);
+				margin: 2em 0;
+			}
+			
 			.title {
 				margin-bottom: 1em;
 				padding: 1em 0;
 				text-align: center;
 				line-height: 1;
 			}
+			
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				color: #00f0ff;
+				font-family: 'Courier New', monospace;
+				font-size: 2.5rem;
+				text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
 			}
+			
 			.date {
 				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+				color: #666;
+				font-family: 'Courier New', monospace;
 			}
+			
 			.last-updated-on {
 				font-style: italic;
+				color: #888;
+			}
+			
+			.back-link {
+				display: inline-block;
+				margin: 2rem 0;
+				color: #ff00ff;
+				text-decoration: none;
+				font-family: 'Courier New', monospace;
+				transition: all 0.2s ease;
+			}
+			
+			.back-link:hover {
+				color: #fff;
+				text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
 			}
 		</style>
 	</head>
 
 	<body>
+		<div class="grid-overlay"></div>
 		<Header />
 		<main>
 			<article>
@@ -78,6 +184,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 						<hr />
 					</div>
 					<slot />
+					<a href="/blog" class="back-link">← Back to blog</a>
 				</div>
 			</article>
 		</main>

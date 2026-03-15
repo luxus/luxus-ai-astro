@@ -15,11 +15,52 @@ const posts = (await getCollection('blog')).sort(
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				width: 960px;
+			body {
+				background: #0a0a0f;
+				min-height: 100vh;
+				background-image: 
+					linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+				background-size: 50px 50px;
 			}
+			
+			.grid-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(ellipse at center, transparent 0%, #0a0a0f 70%);
+				pointer-events: none;
+				z-index: 0;
+			}
+			
+			main {
+				position: relative;
+				z-index: 1;
+				width: 960px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+				padding: 2em 1em;
+			}
+			
+			.page-title {
+				text-align: center;
+				margin-bottom: 3rem;
+			}
+			
+			.page-title h1 {
+				color: #00f0ff;
+				font-family: 'Courier New', monospace;
+				font-size: 2.5rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin: 0;
+				text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+			}
+			
 			ul {
 				display: flex;
 				flex-wrap: wrap;
@@ -49,29 +90,44 @@ const posts = (await getCollection('blog')).sort(
 			ul li img {
 				margin-bottom: 0.5rem;
 				border-radius: 12px;
+				border: 1px solid rgba(0, 240, 255, 0.3);
 			}
 			ul li a {
 				display: block;
+				padding: 1rem;
+				border-radius: 12px;
+				background: rgba(0, 240, 255, 0.03);
+				border: 1px solid rgba(0, 240, 255, 0.2);
+				transition: all 0.3s ease;
+			}
+			ul li a:hover {
+				background: rgba(0, 240, 255, 0.08);
+				border-color: rgba(0, 240, 255, 0.5);
+				box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+				transform: translateY(-4px);
 			}
 			.title {
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				color: #e0e0e0;
+				line-height: 1.2;
+				font-size: 1.3rem;
 			}
 			.date {
-				margin: 0;
-				color: rgb(var(--gray));
+				margin: 0.5rem 0 0 0;
+				color: #666;
+				font-family: 'Courier New', monospace;
+				font-size: 0.85rem;
 			}
 			ul li a:hover h4,
 			ul li a:hover .date {
-				color: rgb(var(--accent));
+				color: #00f0ff;
 			}
 			ul a:hover img {
-				box-shadow: var(--box-shadow);
+				box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
 			}
 			@media (max-width: 720px) {
 				ul {
-					gap: 0.5em;
+					gap: 1em;
 				}
 				ul li {
 					width: 100%;
@@ -87,8 +143,12 @@ const posts = (await getCollection('blog')).sort(
 		</style>
 	</head>
 	<body>
+		<div class="grid-overlay"></div>
 		<Header />
 		<main>
+			<div class="page-title">
+				<h1>Blog</h1>
+			</div>
 			<section>
 				<ul>
 					{
