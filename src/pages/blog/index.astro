@@ -8,167 +8,301 @@ import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
-		<style>
-			body {
-				background: #0a0a0f;
-				min-height: 100vh;
-				background-image: 
-					linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-					linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-				background-size: 50px 50px;
-			}
-			
-			.grid-overlay {
-				position: fixed;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: radial-gradient(ellipse at center, transparent 0%, #0a0a0f 70%);
-				pointer-events: none;
-				z-index: 0;
-			}
-			
-			main {
-				position: relative;
-				z-index: 1;
-				width: 960px;
-				max-width: calc(100% - 2em);
-				margin: 0 auto;
-				padding: 2em 1em;
-			}
-			
-			.page-title {
-				text-align: center;
-				margin-bottom: 3rem;
-			}
-			
-			.page-title h1 {
-				color: #00f0ff;
-				font-family: 'Courier New', monospace;
-				font-size: 2.5rem;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin: 0;
-				text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-			}
-			
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-				border: 1px solid rgba(0, 240, 255, 0.3);
-			}
-			ul li a {
-				display: block;
-				padding: 1rem;
-				border-radius: 12px;
-				background: rgba(0, 240, 255, 0.03);
-				border: 1px solid rgba(0, 240, 255, 0.2);
-				transition: all 0.3s ease;
-			}
-			ul li a:hover {
-				background: rgba(0, 240, 255, 0.08);
-				border-color: rgba(0, 240, 255, 0.5);
-				box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-				transform: translateY(-4px);
-			}
-			.title {
-				margin: 0;
-				color: #e0e0e0;
-				line-height: 1.2;
-				font-size: 1.3rem;
-			}
-			.date {
-				margin: 0.5rem 0 0 0;
-				color: #666;
-				font-family: 'Courier New', monospace;
-				font-size: 0.85rem;
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: #00f0ff;
-			}
-			ul a:hover img {
-				box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 1em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<div class="grid-overlay"></div>
-		<Header />
-		<main>
-			<div class="page-title">
-				<h1>Blog</h1>
-			</div>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={`~/blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+
+    <main>
+      <!-- Prompt breadcrumb -->
+      <div class="breadcrumb">
+        <span class="prompt-char" aria-hidden="true">❯</span>
+        <span class="cmd-path">
+          <a href="/">~</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <span class="current">blog</span>
+        </span>
+        <span class="post-count" aria-label="{posts.length} posts">[{posts.length}]</span>
+      </div>
+
+      <!-- Terminal window -->
+      <div class="term-window blog-listing">
+        <div class="term-titlebar">
+          <span class="term-dot close" aria-hidden="true"></span>
+          <span class="term-dot min"   aria-hidden="true"></span>
+          <span class="term-dot max"   aria-hidden="true"></span>
+          <span class="term-title">ls -lt ~/blog</span>
+        </div>
+
+        <!-- Column headers -->
+        <div class="ls-header" aria-hidden="true">
+          <span class="col-idx">#</span>
+          <span class="col-date">date</span>
+          <span class="col-title">title</span>
+        </div>
+
+        <!-- Post list -->
+        <ul class="ls-list" role="list">
+          {posts.map((post, i) => (
+            <li class="ls-item">
+              <a href={`/blog/${post.id}/`} class="ls-row">
+                <span class="ls-idx" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="ls-date">
+                  <FormattedDate date={post.data.pubDate} />
+                </span>
+                <div class="ls-meta">
+                  <span class="ls-title">{post.data.title}</span>
+                </div>
+                <span class="ls-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Footer prompt -->
+        <div class="listing-footer" aria-hidden="true">
+          <span class="footer-line">
+            {posts.length} file{posts.length !== 1 ? 's' : ''} listed
+          </span>
+          <span class="cursor"></span>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
 </html>
+
+<style>
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .prompt-char {
+    color: var(--green);
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .cmd-path {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--text-muted);
+  }
+
+  .cmd-path a {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    transition: color 0.15s;
+  }
+
+  .cmd-path a:hover {
+    color: var(--green);
+    border-bottom: none;
+    text-shadow: 0 0 6px var(--green-glow);
+  }
+
+  .sep {
+    opacity: 0.4;
+  }
+
+  .current {
+    color: var(--green);
+    text-shadow: 0 0 6px var(--green-glow);
+  }
+
+  .post-count {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    opacity: 0.6;
+  }
+
+  /* Terminal blog listing */
+  .blog-listing {
+    overflow: hidden;
+  }
+
+  /* Column header */
+  .ls-header {
+    display: grid;
+    grid-template-columns: 3ch 12ch 1fr;
+    gap: 1.25rem;
+    padding: 0.4rem 1.25rem;
+    background: var(--bg-overlay);
+    border-bottom: 1px solid var(--border-dim);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  /* List */
+  .ls-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ls-item {
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .ls-item:last-child {
+    border-bottom: none;
+  }
+
+  .ls-row {
+    display: grid;
+    grid-template-columns: 3ch 12ch 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 0.8rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    border-bottom: none;
+    transition: background 0.12s;
+  }
+
+  .ls-row:hover {
+    background: var(--green-faint);
+    border-bottom: none;
+    text-shadow: none;
+  }
+
+  .ls-row:hover .ls-title {
+    color: var(--green);
+    text-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .ls-row:hover .ls-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+    color: var(--green);
+  }
+
+  .ls-idx {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.5;
+  }
+
+  .ls-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .ls-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    overflow: hidden;
+  }
+
+  .ls-title {
+    font-size: 0.9rem;
+    color: var(--text-bright);
+    transition: color 0.12s, text-shadow 0.12s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ls-arrow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.3;
+    transition: opacity 0.15s, transform 0.15s, color 0.15s;
+    justify-self: end;
+  }
+
+  /* Listing footer */
+  .listing-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    background: var(--bg-overlay);
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.85em;
+    background: var(--green);
+    border-radius: 1px;
+    vertical-align: text-bottom;
+    box-shadow: 0 0 6px var(--green-glow);
+    animation: blink 1.1s step-start infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .ls-header,
+    .ls-row {
+      grid-template-columns: 12ch 1fr auto;
+      gap: 0.75rem;
+    }
+
+    .col-idx,
+    .ls-idx {
+      display: none;
+    }
+  }
+
+  @media (max-width: 420px) {
+    main { padding: 1.5rem 1rem 3rem; }
+
+    .ls-header,
+    .ls-row {
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+    }
+
+    .col-date,
+    .ls-date {
+      display: none;
+    }
+  }
+</style>

@@ -1,158 +1,311 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import ProfileCard from '../components/ProfileCard.svelte';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-).slice(0, 3);
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-    <style>
-      body {
-        background: #0a0a0f;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        background-image: 
-          linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        padding: 2rem 1rem;
-      }
-      
-      .grid-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(ellipse at center, transparent 0%, #0a0a0f 70%);
-        pointer-events: none;
-        z-index: 0;
-      }
-      
-      .content {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 500px;
-      }
-      
-      .latest-posts {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 1.5rem;
-        background: rgba(0, 240, 255, 0.03);
-        border: 1px solid rgba(0, 240, 255, 0.2);
-        border-radius: 12px;
-      }
-      
-      .latest-posts h2 {
-        color: #00f0ff;
-        font-family: 'Courier New', monospace;
-        font-size: 0.9rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        margin: 0 0 1rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(0, 240, 255, 0.3);
-      }
-      
-      .posts-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .posts-list li {
-        margin-bottom: 0.75rem;
-      }
-      
-      .posts-list li:last-child {
-        margin-bottom: 0;
-      }
-      
-      .posts-list a {
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        color: #e0e0e0;
-        padding: 0.5rem;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-      }
-      
-      .posts-list a:hover {
-        background: rgba(0, 240, 255, 0.1);
-        color: #00f0ff;
-      }
-      
-      .post-title {
-        font-size: 0.95rem;
-        margin: 0 0 0.25rem 0;
-        font-weight: 500;
-      }
-      
-      .post-date {
-        font-size: 0.75rem;
-        color: #666;
-        font-family: 'Courier New', monospace;
-      }
-      
-      .view-all {
-        display: block;
-        text-align: center;
-        margin-top: 1rem;
-        color: #ff00ff;
-        text-decoration: none;
-        font-family: 'Courier New', monospace;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        transition: all 0.2s ease;
-      }
-      
-      .view-all:hover {
-        color: #fff;
-        text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
-      }
-    </style>
   </head>
   <body>
-    <div class="grid-overlay"></div>
-    <main class="content">
-      <ProfileCard client:load />
-      
-      <div class="latest-posts">
-        <h2>Latest Posts</h2>
-        <ul class="posts-list">
-          {posts.map((post) => (
-            <li>
-              <a href={`/blog/${post.id}/`}>
-                <span class="post-title">{post.data.title}</span>
-                <span class="post-date">
-                  {post.data.pubDate.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
+    <Header />
+
+    <main>
+      <!-- Two-column layout: profile left, posts right -->
+      <div class="layout">
+        <aside class="col-profile">
+          <ProfileCard client:load />
+        </aside>
+
+        <section class="col-posts" aria-label="Recent posts">
+          <!-- Shell prompt header -->
+          <div class="section-header">
+            <span class="prompt-str" aria-hidden="true">❯</span>
+            <span class="cmd-str">ls&nbsp;<span class="cmd-arg">-lt&nbsp;./blog</span></span>
+          </div>
+
+          <!-- File listing -->
+          <div class="file-listing term-window">
+            <div class="term-titlebar">
+              <span class="term-dot close" aria-hidden="true"></span>
+              <span class="term-dot min"   aria-hidden="true"></span>
+              <span class="term-dot max"   aria-hidden="true"></span>
+              <span class="term-title">~/blog — {posts.length} entries</span>
+            </div>
+
+            <div class="ls-header" aria-hidden="true">
+              <span class="col-perms">permissions</span>
+              <span class="col-date">date</span>
+              <span class="col-name">filename</span>
+            </div>
+
+            <ul class="ls-list" role="list">
+              {posts.map((post, i) => (
+                <li class="ls-item">
+                  <a href={`/blog/${post.id}/`} class="ls-row">
+                    <span class="ls-perms" aria-hidden="true">-rw-r--r--</span>
+                    <span class="ls-date">
+                      {post.data.pubDate.toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: '2-digit',
+                      })}
+                    </span>
+                    <span class="ls-name">{post.data.title}</span>
+                    <span class="ls-arrow" aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="ls-footer">
+              <a href="/blog" class="view-all-cmd">
+                <span class="prompt-mini" aria-hidden="true">❯</span>
+                <span>cd ./blog &amp;&amp; ls -a</span>
+                <span class="view-count">view all posts</span>
               </a>
-            </li>
-          ))}
-        </ul>
-        <a href="/blog" class="view-all">View all posts →</a>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
+
+    <Footer />
   </body>
 </html>
+
+<style>
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+    padding: 2.5rem 1.5rem 4rem;
+    max-width: 1060px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Two-column grid */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .col-profile {
+    position: sticky;
+    top: 4.5rem;
+  }
+
+  /* Section header with prompt */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-left: 0.1rem;
+  }
+
+  .prompt-str {
+    color: var(--green);
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--green-glow);
+    font-size: 0.85rem;
+  }
+
+  .cmd-str {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .cmd-arg {
+    color: var(--amber);
+    opacity: 0.8;
+  }
+
+  /* File listing terminal window */
+  .file-listing {
+    overflow: hidden;
+  }
+
+  .ls-header {
+    display: grid;
+    grid-template-columns: 9ch 8ch 1fr;
+    gap: 1rem;
+    padding: 0.4rem 1.25rem;
+    background: var(--bg-overlay);
+    border-bottom: 1px solid var(--border-dim);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  .ls-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ls-item {
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .ls-item:last-child {
+    border-bottom: none;
+  }
+
+  .ls-row {
+    display: grid;
+    grid-template-columns: 9ch 8ch 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.7rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    border-bottom: none;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .ls-row:hover {
+    background: var(--green-faint);
+    color: var(--text-bright);
+    border-bottom: none;
+    text-shadow: none;
+  }
+
+  .ls-row:hover .ls-name {
+    color: var(--green);
+    text-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .ls-row:hover .ls-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+    color: var(--green);
+  }
+
+  .ls-perms {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: -0.03em;
+    font-family: var(--font-mono);
+  }
+
+  .ls-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .ls-name {
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    transition: color 0.12s, text-shadow 0.12s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ls-arrow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.3;
+    transition: opacity 0.15s, transform 0.15s, color 0.15s;
+    justify-self: end;
+  }
+
+  /* View all footer */
+  .ls-footer {
+    border-top: 1px solid var(--border);
+    padding: 0.65rem 1.25rem;
+    background: var(--bg-overlay);
+  }
+
+  .view-all-cmd {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    transition: color 0.15s, text-shadow 0.15s;
+  }
+
+  .view-all-cmd:hover {
+    color: var(--green);
+    text-shadow: 0 0 6px var(--green-glow);
+    border-bottom: none;
+  }
+
+  .prompt-mini {
+    color: var(--green-dim);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .view-count {
+    margin-left: auto;
+    font-size: 0.65rem;
+    opacity: 0.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Responsive */
+  @media (max-width: 760px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .col-profile {
+      position: static;
+    }
+
+    .ls-header,
+    .ls-row {
+      grid-template-columns: 7ch 1fr auto;
+    }
+
+    .col-perms,
+    .ls-perms {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    main { padding: 1.5rem 1rem 3rem; }
+
+    .ls-header,
+    .ls-row {
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+    }
+
+    .col-date,
+    .ls-date {
+      display: none;
+    }
+  }
+</style>
