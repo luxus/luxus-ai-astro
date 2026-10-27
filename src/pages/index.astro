@@ -1,311 +1,53 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import ProfileCard from '../components/ProfileCard.svelte';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 4);
+const contacts = [
+  { label: 'GitHub', href: 'https://github.com/luxus', display: 'github.com/luxus' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/luxus', display: 'linkedin.com/in/luxus' },
+  { label: 'X', href: 'https://x.com/luxus', display: 'x.com/luxus' },
+];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-webtui-theme="dark">
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
   <body>
-    <Header />
-
     <main>
-      <!-- Two-column layout: profile left, posts right -->
-      <div class="layout">
-        <aside class="col-profile">
-          <ProfileCard client:load />
-        </aside>
+      <article class="page" box-="square" is-="wrap">
+        <header>
+          <h1>Kai Löhnert</h1>
+          <p class="handle">@{SITE_TITLE}</p>
+        </header>
 
-        <section class="col-posts" aria-label="Recent posts">
-          <!-- Shell prompt header -->
-          <div class="section-header">
-            <span class="prompt-str" aria-hidden="true">❯</span>
-            <span class="cmd-str">ls&nbsp;<span class="cmd-arg">-lt&nbsp;./blog</span></span>
-          </div>
+        <hr />
 
-          <!-- File listing -->
-          <div class="file-listing term-window">
-            <div class="term-titlebar">
-              <span class="term-dot close" aria-hidden="true"></span>
-              <span class="term-dot min"   aria-hidden="true"></span>
-              <span class="term-dot max"   aria-hidden="true"></span>
-              <span class="term-title">~/blog — {posts.length} entries</span>
-            </div>
+        <section class="about" aria-label="About">
+          <p>
+            Cybersecurity sales in Zürich, Switzerland. Half German, half Thai —
+            I work at the intersection of technology and trust.
+          </p>
+        </section>
 
-            <div class="ls-header" aria-hidden="true">
-              <span class="col-perms">permissions</span>
-              <span class="col-date">date</span>
-              <span class="col-name">filename</span>
-            </div>
+        <hr />
 
-            <ul class="ls-list" role="list">
-              {posts.map((post, i) => (
-                <li class="ls-item">
-                  <a href={`/blog/${post.id}/`} class="ls-row">
-                    <span class="ls-perms" aria-hidden="true">-rw-r--r--</span>
-                    <span class="ls-date">
-                      {post.data.pubDate.toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: '2-digit',
-                      })}
-                    </span>
-                    <span class="ls-name">{post.data.title}</span>
-                    <span class="ls-arrow" aria-hidden="true">→</span>
+        <nav aria-label="Contact">
+          <ul class="contacts">
+            {
+              contacts.map((c) => (
+                <li>
+                  <a href={c.href} target="_blank" rel="noopener noreferrer">
+                    <span class="label">{c.label}</span>
+                    <span class="url">{c.display}</span>
                   </a>
                 </li>
-              ))}
-            </ul>
-
-            <div class="ls-footer">
-              <a href="/blog" class="view-all-cmd">
-                <span class="prompt-mini" aria-hidden="true">❯</span>
-                <span>cd ./blog &amp;&amp; ls -a</span>
-                <span class="view-count">view all posts</span>
-              </a>
-            </div>
-          </div>
-        </section>
-      </div>
+              ))
+            }
+          </ul>
+        </nav>
+      </article>
     </main>
-
-    <Footer />
   </body>
 </html>
-
-<style>
-  body {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  main {
-    flex: 1;
-    padding: 2.5rem 1.5rem 4rem;
-    max-width: 1060px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  /* Two-column grid */
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 2.5rem;
-    align-items: start;
-  }
-
-  .col-profile {
-    position: sticky;
-    top: 4.5rem;
-  }
-
-  /* Section header with prompt */
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    padding-left: 0.1rem;
-  }
-
-  .prompt-str {
-    color: var(--green);
-    font-weight: 700;
-    text-shadow: 0 0 8px var(--green-glow);
-    font-size: 0.85rem;
-  }
-
-  .cmd-str {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 0.02em;
-  }
-
-  .cmd-arg {
-    color: var(--amber);
-    opacity: 0.8;
-  }
-
-  /* File listing terminal window */
-  .file-listing {
-    overflow: hidden;
-  }
-
-  .ls-header {
-    display: grid;
-    grid-template-columns: 9ch 8ch 1fr;
-    gap: 1rem;
-    padding: 0.4rem 1.25rem;
-    background: var(--bg-overlay);
-    border-bottom: 1px solid var(--border-dim);
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    user-select: none;
-  }
-
-  .ls-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .ls-item {
-    border-bottom: 1px solid var(--border-dim);
-  }
-
-  .ls-item:last-child {
-    border-bottom: none;
-  }
-
-  .ls-row {
-    display: grid;
-    grid-template-columns: 9ch 8ch 1fr auto;
-    gap: 1rem;
-    align-items: center;
-    padding: 0.7rem 1.25rem;
-    text-decoration: none;
-    color: var(--text);
-    border-bottom: none;
-    transition: background 0.12s, color 0.12s;
-  }
-
-  .ls-row:hover {
-    background: var(--green-faint);
-    color: var(--text-bright);
-    border-bottom: none;
-    text-shadow: none;
-  }
-
-  .ls-row:hover .ls-name {
-    color: var(--green);
-    text-shadow: 0 0 8px var(--green-glow);
-  }
-
-  .ls-row:hover .ls-arrow {
-    opacity: 1;
-    transform: translateX(3px);
-    color: var(--green);
-  }
-
-  .ls-perms {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    letter-spacing: -0.03em;
-    font-family: var(--font-mono);
-  }
-
-  .ls-date {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .ls-name {
-    font-size: 0.85rem;
-    color: var(--text-bright);
-    transition: color 0.12s, text-shadow 0.12s;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .ls-arrow {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    opacity: 0.3;
-    transition: opacity 0.15s, transform 0.15s, color 0.15s;
-    justify-self: end;
-  }
-
-  /* View all footer */
-  .ls-footer {
-    border-top: 1px solid var(--border);
-    padding: 0.65rem 1.25rem;
-    background: var(--bg-overlay);
-  }
-
-  .view-all-cmd {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    border-bottom: none;
-    transition: color 0.15s, text-shadow 0.15s;
-  }
-
-  .view-all-cmd:hover {
-    color: var(--green);
-    text-shadow: 0 0 6px var(--green-glow);
-    border-bottom: none;
-  }
-
-  .prompt-mini {
-    color: var(--green-dim);
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .view-count {
-    margin-left: auto;
-    font-size: 0.65rem;
-    opacity: 0.4;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  /* Responsive */
-  @media (max-width: 760px) {
-    .layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .col-profile {
-      position: static;
-    }
-
-    .ls-header,
-    .ls-row {
-      grid-template-columns: 7ch 1fr auto;
-    }
-
-    .col-perms,
-    .ls-perms {
-      display: none;
-    }
-  }
-
-  @media (max-width: 480px) {
-    main { padding: 1.5rem 1rem 3rem; }
-
-    .ls-header,
-    .ls-row {
-      grid-template-columns: 1fr auto;
-      gap: 0.5rem;
-    }
-
-    .col-date,
-    .ls-date {
-      display: none;
-    }
-  }
-</style>
