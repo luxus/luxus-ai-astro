@@ -10,44 +10,71 @@ const contacts = [
 ---
 
 <!doctype html>
-<html lang="en" data-webtui-theme="dark">
+<html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead title={`Kai Löhnert — ${SITE_TITLE}.ai`} description={SITE_DESCRIPTION} />
   </head>
   <body>
-    <main>
-      <article class="page" box-="square" is-="wrap">
-        <header>
-          <h1>Kai Löhnert</h1>
-          <p class="handle">@{SITE_TITLE}</p>
-        </header>
+    <div class="shell">
+      <div class="bg-grid" aria-hidden="true"></div>
+      <div class="signal-line" aria-hidden="true"></div>
 
-        <hr />
+      <main class="page">
+        <article class="tech-panel">
+          <div class="status-row" aria-hidden="true">
+            <div class="status-item">
+              <span class="status-dot status-dot--blue"></span>
+              <span>STATUS: ACTIVE</span>
+            </div>
+            <div class="status-rule"></div>
+            <div class="status-item">
+              <span class="status-dot status-dot--red"></span>
+              <span>SYS: SECURE</span>
+            </div>
+          </div>
 
-        <section class="about" aria-label="About">
-          <p>
-            Cybersecurity sales in Zürich, Switzerland. Half German, half Thai —
-            I work at the intersection of technology and trust.
-          </p>
-        </section>
+          <header class="page-header">
+            <h1>Kai Löhnert</h1>
+            <p class="handle">@luxus</p>
+          </header>
 
-        <hr />
+          <div class="divider" aria-hidden="true"></div>
 
-        <nav aria-label="Contact">
-          <ul class="contacts">
-            {
-              contacts.map((c) => (
-                <li>
-                  <a href={c.href} target="_blank" rel="noopener noreferrer">
-                    <span class="label">{c.label}</span>
-                    <span class="url">{c.display}</span>
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-      </article>
-    </main>
+          <section class="about" aria-label="About">
+            <p>
+              Cybersecurity engineer. I design defenses by thinking like the people who break
+              them.
+            </p>
+          </section>
+
+          <nav aria-label="Links">
+            <div class="nav-label">Connection Vectors</div>
+            <ul class="contacts">
+              {
+                contacts.map((c) => (
+                  <li>
+                    <a
+                      class="link-item"
+                      href={c.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span class="link-label">{c.label}</span>
+                      <span class="link-url">{c.display}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </article>
+
+        <div class="meta" aria-hidden="true">
+          <span>INT.01</span>
+          <span class="meta-rule"></span>
+          <span>ZRH.CH</span>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
